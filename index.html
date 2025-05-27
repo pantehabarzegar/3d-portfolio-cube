@@ -1,16 +1,17 @@
+<!-- نسخه کامل شامل چرخش 4 ثانیه‌ای و کنترل دستی بعد از آن -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>3D Portfolio Cube</title>
+  <title>Panteha Barzegar - 3D Portfolio Cube</title>
   <style>
     :root {
       --bg-dark: #1a1a1a;
-      --bg-light: #f0f0f0;
       --txt-dark: #fefefe;
       --txt-light: #111;
-      --shadow-glow: rgba(255, 215, 150, 0.2);
+      --shadow-glow-dark: rgba(255, 215, 150, 0.2);
+      --shadow-glow-light: rgba(0, 0, 0, 0.15);
     }
 
     body {
@@ -23,10 +24,67 @@
       transition: background 0.5s, color 0.5s;
     }
 
+    body.light-mode {
+      background: #fefefe;
+      color: #111;
+    }
+
+    .intro-screen {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle, #000 0%, #1a1a1a 100%);
+      color: #fff;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .intro-screen h1 {
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+      color: #ffd790;
+    }
+
+    .intro-screen p {
+      max-width: 700px;
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 10px;
+      color: #ddd;
+    }
+
+    .intro-screen .note {
+      margin-top: 20px;
+      font-style: italic;
+      font-size: 0.95rem;
+      color: #ccc;
+    }
+
+    .enter-btn {
+      background: #ffd790;
+      color: #111;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 30px;
+    }
+
+    .enter-btn:hover {
+      background: #ffb950;
+    }
+
     .wrapper {
       width: 100vw;
       height: 100vh;
-      display: flex;
+      display: none;
       justify-content: center;
       align-items: center;
       perspective: 1200px;
@@ -39,16 +97,15 @@
       position: relative;
       transform-style: preserve-3d;
       transition: transform 1s ease-in-out;
-      animation: autoRotate 30s infinite linear;
     }
 
+    /* .cube.auto-rotate {
+      animation: autoRotate 8s linear;
+    } */
+
     @keyframes autoRotate {
-      from {
-        transform: rotateX(0deg) rotateY(0deg);
-      }
-      to {
-        transform: rotateX(360deg) rotateY(360deg);
-      }
+      from { transform: rotateX(0deg) rotateY(0deg); }
+      to { transform: rotateX(180deg) rotateY(180deg); }
     }
 
     .face {
@@ -58,7 +115,7 @@
       overflow: hidden;
       border-radius: 12px;
       box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6),
-                  inset 0 0 100px var(--shadow-glow);
+                  inset 0 0 100px var(--shadow-glow-dark);
       background: rgba(255, 255, 255, 0.03);
       backdrop-filter: blur(3px);
       display: flex;
@@ -81,6 +138,27 @@
     .top    { transform: rotateX( 90deg) translateZ(40vmin); }
     .bottom { transform: rotateX(-90deg) translateZ(40vmin); }
 
+    .overlay-card {
+      position: absolute;
+      width: 90%;
+      bottom: 10%;
+      left: 5%;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      padding: 12px;
+      font-size: 16px;
+      line-height: 1.5;
+      border-radius: 10px;
+      text-align: center;
+      backdrop-filter: blur(6px);
+      pointer-events: none;
+    }
+
+    body.light-mode .overlay-card {
+      background: rgba(255, 255, 255, 0.8);
+      color: #111;
+    }
+
     .toggle-theme {
       position: fixed;
       top: 20px;
@@ -95,6 +173,7 @@
       backdrop-filter: blur(4px);
       transition: background 0.3s;
       z-index: 1000;
+      display: none;
     }
 
     .toggle-theme:hover {
@@ -116,44 +195,73 @@
         display: block;
       }
     }
-
-    @media (max-width: 768px) {
-      .cube {
-        width: 90vmin;
-        height: 90vmin;
-      }
-
-      .face img {
-        object-fit: cover;
-      }
-    }
   </style>
 </head>
 <body>
 
-  <button class="toggle-theme" onclick="toggleTheme()">Toggle Theme</button>
-  <div class="info-desktop">Use arrow keys to rotate the cube (Desktop only)</div>
+  <div class="intro-screen" id="intro">
+    <h1>Welcome to My Personal Cube</h1>
+    <p>
+  This is a personal visual project inspired by geometry and multi-dimensional exploration in 3D space. It offers a lightweight, interactive experience that reflects the evolving possibilities of web design and future digital storytelling.
+</p>
+<p class="note">
+  The cube begins its smooth rotation automatically for a few seconds,<br>
+  then you’re free to explore each face using your keyboard or touch.<br>
+  Feel free to inspect the code — it’s clean, lightweight, and easy to follow.
+</p>
 
-  <div class="wrapper">
+    <button class="enter-btn" onclick="enterSite()">Enter the Cube</button>
+  </div>
+
+  <button class="toggle-theme" onclick="toggleTheme()">💡 Turn lights on</button>
+  <div class="info-desktop">Click or use arrow keys to explore</div>
+
+  <div class="wrapper" id="main-content">
     <div class="cube" id="cube">
-      <div class="face front"><img src="image1.webp" alt="Front Face"></div>
-      <div class="face back"><img src="image2.webp" alt="Back Face"></div>
-      <div class="face left"><img src="image3.webp" alt="Left Face"></div>
-      <div class="face right"><img src="image4.webp" alt="Right Face"></div>
-      <div class="face top"><img src="image5.webp" alt="Top Face"></div>
-      <div class="face bottom"><img src="image6.webp" alt="Bottom Face"></div>
+      <div class="face front">
+        <img src="image1.JPG" alt="Front Face">
+        <div class="overlay-card">
+          Hi, I'm <strong>Panteha Barzegar</strong> – a passionate web developer and creative thinker.<br/>
+          Email: <a href="mailto:panteha.barzegar@example.com" style="color: #b10b9b;">panteha.barzegar@pipuzzle.dev</a>
+        </div>
+      </div>
+      <div class="face back">
+        <img src="image2.jpg" alt="Back Face">
+        <div class="overlay-card">I build responsive interfaces that balance usability and elegance.</div>
+      </div>
+      <div class="face left">
+        <img src="image3.JPG" alt="Left Face">
+        <div class="overlay-card">I solve complex challenges and turn them into digital beauty.</div>
+      </div>
+      <div class="face right">
+        <img src="image4.jpg" alt="Right Face">
+        <div class="overlay-card">HTML, CSS, JS, and React – building dynamic web experiences.</div>
+      </div>
+      <div class="face top">
+        <img src="image5.webp" alt="Top Face">
+        <div class="overlay-card">I bring passion and precision to code and design.</div>
+      </div>
+      <div class="face bottom">
+        <img src="image6.JPG" alt="Bottom Face">
+        <div class="overlay-card">Let's create something innovative together.</div>
+      </div>
     </div>
   </div>
 
   <script>
-    let cube = document.getElementById('cube');
-    let autoRotate = true;
+    const cube = document.getElementById('cube');
     let angleX = 0, angleY = 0;
+    let autoRotate = false;
+    let interactionEnabled = false;
 
-    // Stop auto rotation when user interacts
-    document.addEventListener('keydown', (e) => {
+    function stopAutoRotate() {
+      cube.classList.remove('auto-rotate');
       autoRotate = false;
-      cube.style.animation = 'none';
+      interactionEnabled = true;
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (!interactionEnabled) return;
       if (e.key === "ArrowUp") angleX -= 90;
       if (e.key === "ArrowDown") angleX += 90;
       if (e.key === "ArrowLeft") angleY -= 90;
@@ -161,16 +269,18 @@
       cube.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg)`;
     });
 
-    // Touch support for mobile
-    let startX = 0, startY = 0;
+    document.addEventListener('click', () => {
+      if (!interactionEnabled) return;
+    });
+
     document.addEventListener('touchstart', (e) => {
-      autoRotate = false;
-      cube.style.animation = 'none';
+      if (!interactionEnabled) return;
       startX = e.touches[0].clientX;
       startY = e.touches[0].clientY;
     });
 
     document.addEventListener('touchend', (e) => {
+      if (!interactionEnabled) return;
       let deltaX = e.changedTouches[0].clientX - startX;
       let deltaY = e.changedTouches[0].clientY - startY;
       if (Math.abs(deltaX) > Math.abs(deltaY)) {
@@ -181,19 +291,47 @@
       cube.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg)`;
     });
 
-    // Toggle dark/light mode
     function toggleTheme() {
-      const isDark = document.body.style.background === 'var(--bg-dark)' || getComputedStyle(document.body).backgroundColor === 'rgb(26, 26, 26)';
-      if (isDark) {
-        document.body.style.background = 'var(--bg-light)';
-        document.body.style.color = 'var(--txt-light)';
-        document.documentElement.style.setProperty('--shadow-glow', 'rgba(0, 0, 0, 0.15)');
-      } else {
-        document.body.style.background = 'var(--bg-dark)';
-        document.body.style.color = 'var(--txt-dark)';
-        document.documentElement.style.setProperty('--shadow-glow', 'rgba(255, 215, 150, 0.2)');
-      }
+      const body = document.body;
+      const btn = document.querySelector('.toggle-theme');
+      body.classList.toggle('light-mode');
+      btn.innerText = body.classList.contains('light-mode')
+        ? '💡 Turn lights off'
+        : '💡 Turn lights on';
     }
+
+function enterSite() {
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('main-content').style.display = 'flex';
+  document.querySelector('.toggle-theme').style.display = 'block';
+
+  let rotationX = 0;
+  let rotationY = 0;
+  let velocity = 3;      // شروع نرم‌تر از 5 یا 6
+  let damping = 0.99;    // کند شدن آرام
+  interactionEnabled = false;
+
+  const interval = setInterval(() => {
+    rotationX += velocity;
+    rotationY += velocity;
+
+    cube.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+    velocity *= damping;
+
+    // بعد از حدود 5 ثانیه چرخش به حالت معرفی برمی‌گردد (0,0)
+    if (velocity < 0.1) {
+      clearInterval(interval);
+      cube.style.transition = "transform 1.2s ease-out";
+      cube.style.transform = `rotateX(0deg) rotateY(0deg)`; // بازگشت به front face
+      setTimeout(() => {
+        cube.style.transition = ""; // حذف ترنزیشن برای کنترل دستی
+        interactionEnabled = true;
+      }, 230);
+    }
+  }, 20); // حدود 30 فریم در ثانیه (خیلی طبیعی‌تر از 300ms)
+}
+
+
   </script>
 </body>
 </html>
